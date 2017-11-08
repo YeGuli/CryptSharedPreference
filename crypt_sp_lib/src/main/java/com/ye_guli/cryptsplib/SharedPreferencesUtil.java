@@ -31,7 +31,7 @@ import javax.crypto.spec.SecretKeySpec;
  * SP相关工具类
  */
 class SharedPreferencesUtil {
-    private final static String SETTING_SHAREDPREFERENCES_NAME = "zk.setting";
+    private final static String SETTING_SHARED_PREFERENCES_NAME = "setting";
     private static final char hexDigits[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
     private static SharedPreferences zkSharedPreferences;
@@ -46,7 +46,7 @@ class SharedPreferencesUtil {
      */
     @SuppressLint("CommitPrefEdits")
     static void changeSetting(Context context, String key, Object value, String type) {
-        zkSharedPreferences = context.getSharedPreferences(SETTING_SHAREDPREFERENCES_NAME, Context.MODE_PRIVATE);
+        zkSharedPreferences = context.getSharedPreferences(SETTING_SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
         zkSharedPreferencesEditor = zkSharedPreferences.edit();
         switch (type) {
             case "int":
@@ -81,7 +81,7 @@ class SharedPreferencesUtil {
      */
     @SuppressLint("CommitPrefEdits")
     static void changeSetting(Context context, String key, Object value) {
-        zkSharedPreferences = context.getSharedPreferences(SETTING_SHAREDPREFERENCES_NAME, Context.MODE_PRIVATE);
+        zkSharedPreferences = context.getSharedPreferences(SETTING_SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
         zkSharedPreferencesEditor = zkSharedPreferences.edit();
         if (value instanceof Integer) {
             zkSharedPreferencesEditor.putInt(key, (int) value);
@@ -105,7 +105,7 @@ class SharedPreferencesUtil {
      * @param type         值的类型
      */
     static Object getSetting(Context context, String key, Object defaultValue, String type) {
-        zkSharedPreferences = context.getSharedPreferences(SETTING_SHAREDPREFERENCES_NAME, Context.MODE_PRIVATE);
+        zkSharedPreferences = context.getSharedPreferences(SETTING_SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
         switch (type) {
             case "int":
                 return zkSharedPreferences.getInt(key, (int) defaultValue);
@@ -131,7 +131,7 @@ class SharedPreferencesUtil {
      * @param defaultValue 为空时默认的返回值
      */
     static Object getSetting(Context context, String key, Object defaultValue) {
-        zkSharedPreferences = context.getSharedPreferences(SETTING_SHAREDPREFERENCES_NAME, Context.MODE_PRIVATE);
+        zkSharedPreferences = context.getSharedPreferences(SETTING_SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
         if (defaultValue instanceof Integer) {
             return zkSharedPreferences.getInt(key, (int) defaultValue);
         } else if (defaultValue instanceof Float) {
@@ -153,7 +153,7 @@ class SharedPreferencesUtil {
      * @param key 键
      */
     static void remove(Context context, String key) {
-        zkSharedPreferences = context.getSharedPreferences(SETTING_SHAREDPREFERENCES_NAME, Context.MODE_PRIVATE);
+        zkSharedPreferences = context.getSharedPreferences(SETTING_SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
         zkSharedPreferencesEditor = zkSharedPreferences.edit();
         zkSharedPreferencesEditor.remove(key).apply();
     }
@@ -166,7 +166,7 @@ class SharedPreferencesUtil {
      * @return {@code true}: 存在<br>{@code false}: 不存在
      */
     static boolean contains(Context context, String key) {
-        zkSharedPreferences = context.getSharedPreferences(SETTING_SHAREDPREFERENCES_NAME, Context.MODE_PRIVATE);
+        zkSharedPreferences = context.getSharedPreferences(SETTING_SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
         return zkSharedPreferences.contains(key);
     }
 
@@ -174,7 +174,7 @@ class SharedPreferencesUtil {
      * 清除所有数据
      */
     static void clear(Context context) {
-        zkSharedPreferences = context.getSharedPreferences(SETTING_SHAREDPREFERENCES_NAME, Context.MODE_PRIVATE);
+        zkSharedPreferences = context.getSharedPreferences(SETTING_SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
         zkSharedPreferencesEditor = zkSharedPreferences.edit();
         zkSharedPreferencesEditor.clear().apply();
     }
@@ -185,7 +185,7 @@ class SharedPreferencesUtil {
      *
      * @return IMIE码
      */
-    @SuppressLint("HardwareIds")
+    @SuppressLint({"HardwareIds", "MissingPermission"})
     static String getIMEI(Context context) {
         TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         return tm != null ? tm.getDeviceId() : "";

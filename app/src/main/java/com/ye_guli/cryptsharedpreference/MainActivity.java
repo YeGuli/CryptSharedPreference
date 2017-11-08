@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if (handler != null) {
                     try {
-                        SharedPreferencesHandler.getInstance().saveSetting(getApplicationContext(), new AccountSet(usr, psw));
+                        handler.saveSetting(getApplicationContext(), new AccountSet(usr, psw));
                     } catch (IOException e) {
                         makeToast(e.toString());
                         e.printStackTrace();
@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (handler != null) {
                     try {
-                        AccountSet set = SharedPreferencesHandler.getInstance().getSettings(getApplicationContext(), AccountSet.class);
+                        AccountSet set = handler.getSettings(getApplicationContext(), AccountSet.class);
                         tvDisplay.setText(set.toString());
                     } catch (InstantiationException e) {
                         makeToast(e.toString());
