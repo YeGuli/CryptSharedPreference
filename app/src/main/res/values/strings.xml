@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">CryptSharedPreference</string>
+
+    <string name="ac_main_et_usw_hint">userName</string>
+    <string name="ac_main_et_psw_hint">passWord</string>
+    <string name="ac_main_bt_save_text">save</string>
+    <string name="ac_main_bt_get_text">Get From Sp</string>
+
+    <string name="ac_main_et_empty_error">Is Empty!</string>
+</resources>

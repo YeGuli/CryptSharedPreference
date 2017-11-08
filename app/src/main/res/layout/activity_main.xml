@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp"
+    tools:context="com.ye_guli.cryptsharedpreference.MainActivity">
+
+    <EditText
+        android:id="@+id/et_usr"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:hint="@string/ac_main_et_usw_hint" />
+
+    <EditText
+        android:id="@+id/et_psw"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:hint="@string/ac_main_et_psw_hint" />
+
+    <Button
+        android:id="@+id/bt_save"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="@string/ac_main_bt_save_text" />
+
+    <Button
+        android:id="@+id/bt_get"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="@string/ac_main_bt_get_text" />
+
+    <TextView
+        android:id="@+id/tv_display"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorAccent"
+        android:gravity="center"
+        android:textColor="#fff"
+        android:textSize="20sp"
+        tools:text="display" />
+</LinearLayout>
