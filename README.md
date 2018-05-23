@@ -33,7 +33,7 @@ public class AccountSet extends BaseSet {
 2. 初始化SharedPreferencesHandler：
 ```java
 SharedPreferencesHandler handler = SharedPreferencesHandler.getInstance();
-handler.initSecretKey(getApplicationContext(), "");
+handler.initSecretKey(getApplicationContext(), ""，false);
 ```
 
 3. 使用SharedPreferencesHandler保存数据：
@@ -67,4 +67,4 @@ try {
 
 ## 4、使用注意
 
-使用需要权限`<uses-permission android:name="android.permission.READ_PHONE_STATE"/>`
+如果初始化秘钥时选择使用设备IMEI码处理秘钥则需要权限`<uses-permission android:name="android.permission.READ_PHONE_STATE"/>`

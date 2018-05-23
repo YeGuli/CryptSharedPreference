@@ -8,6 +8,7 @@ import com.ye_guli.cryptsplib.BaseSet;
  * AccountSet
  */
 public class AccountSet extends BaseSet {
+    private static final long serialVersionUID = 0x0214a14;
     private String username;
     private String password;
 

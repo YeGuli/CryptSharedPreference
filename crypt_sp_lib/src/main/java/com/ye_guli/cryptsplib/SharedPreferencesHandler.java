@@ -22,13 +22,11 @@ import io.reactivex.schedulers.Schedulers;
  * Created by Ye_Guli on 2016/5/18.
  * <p>
  * 可将数据加密保存的SP模块，需将想要保存的数据类继承BaseSet，之后便可以调用sava方法保存数据。
- * <p>
- * 需添加权限 {@code <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
  */
 public class SharedPreferencesHandler {
     private final String TAG = "SPHandler";
     private String secretKey;
-    private static SharedPreferencesHandler ourInstance = new SharedPreferencesHandler();
+    private static SharedPreferencesHandler ourInstance;
 
     public static SharedPreferencesHandler getInstance() {
         if (ourInstance == null) {
@@ -44,9 +42,22 @@ public class SharedPreferencesHandler {
     private SharedPreferencesHandler() {
     }
 
-    public void initSecretKey(Context context, String customKey) {
+    /**
+     * 初始化存储秘钥
+     *
+     * @param context    上下文
+     * @param customKey  自定义秘钥，若为空则使用默认秘钥
+     * @param isNeedIMEI 是否使用设备IMEI码处理秘钥，为true的情况下需添加权限 {@code <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+     *
+     * @return 数据
+     */
+    public void initSecretKey(Context context, String customKey, boolean isNeedIMEI) {
         String realKey = customKey.isEmpty() ? "&*v#C$D%66^F&gg@14^kyon" : customKey;
-        secretKey = SharedPreferencesUtil.encryptSHA512ToString(SharedPreferencesUtil.getIMEI(context) + realKey).substring(0, 16);//生成秘钥
+        if (isNeedIMEI) {
+            secretKey = SharedPreferencesUtil.encryptSHA512ToString(SharedPreferencesUtil.getIMEI(context) + realKey).substring(0, 16);//生成秘钥
+        } else {
+            secretKey = SharedPreferencesUtil.encryptSHA512ToString(realKey).substring(0, 16);//生成秘钥
+        }
     }
 
     /**
@@ -88,6 +99,37 @@ public class SharedPreferencesHandler {
             }
         }, BackpressureStrategy.BUFFER)
                 .subscribeOn(Schedulers.io())
+                .doOnError(new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        Log.e(TAG, throwable.toString());
+                    }
+                });
+    }
+
+    /**
+     * 读取配置文件(同步方法)
+     *
+     * @param context 上下文
+     * @param tClass  要取数据的类型
+     *
+     * @return Rx数据
+     */
+    public <T extends BaseSet> Flowable<T> getSettingsForRxExecute(final Context context, final Class<T> tClass) {
+        return Flowable.create(new FlowableOnSubscribe<T>() {
+            @Override
+            public void subscribe(FlowableEmitter<T> e) throws Exception {
+                if (secretKey == null) {
+                    e.onError(new IllegalArgumentException("secretKey not init!"));
+                }
+                T t = getSettingFromSp(context, tClass.getSimpleName(), tClass);
+                if (t == null) {
+                    e.onError(new NullPointerException());
+                } else {
+                    e.onNext(t);
+                }
+            }
+        }, BackpressureStrategy.BUFFER)
                 .doOnError(new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
@@ -143,6 +185,37 @@ public class SharedPreferencesHandler {
     }
 
     /**
+     * 保存配置文件(同步方法)
+     *
+     * @param context 上下文
+     * @param t       要保存的数据
+     *
+     * @return Rx
+     */
+    public <T extends BaseSet> Flowable<T> saveSettingsForRxExecute(final Context context, final T t) {
+        return Flowable.create(new FlowableOnSubscribe<T>() {
+            @Override
+            public void subscribe(FlowableEmitter<T> e) throws Exception {
+                if (secretKey == null) {
+                    e.onError(new IllegalArgumentException("secretKey not init!"));
+                }
+                if (t == null || context == null) {
+                    e.onError(new NullPointerException());
+                } else {
+                    saveSettingToSp(context, t.getClass().getSimpleName(), t);
+                    e.onComplete();
+                }
+            }
+        }, BackpressureStrategy.BUFFER)
+                .doOnError(new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        Log.e(TAG, throwable.toString());
+                    }
+                });
+    }
+
+    /**
      * 判断指定数据类是否存在于配置文件中
      *
      * @param context 上下文
@@ -184,7 +257,7 @@ public class SharedPreferencesHandler {
      */
     private synchronized <T extends BaseSet> T getSettingFromSp(Context context, String key, Class<T> tClass) throws IllegalAccessException, InstantiationException {
         String encryptedKey = SharedPreferencesUtil.encryptSHA512ToString(key);//使用SHA512加密键名
-        String value = (String) SharedPreferencesUtil.getSetting(context, encryptedKey, "", "String");//根据键名提取数据
+        String value = (String) SharedPreferencesUtil.getSetting(context, encryptedKey, "");//根据键名提取数据
         if (value == null || value.equals("")) {
             return tClass.newInstance();
         } else {
@@ -209,7 +282,7 @@ public class SharedPreferencesHandler {
         String encryptedKey = SharedPreferencesUtil.encryptSHA512ToString(key);//使用SHA512加密键名
         String serializedValue = serialize(value);//序列化需要保存的值
         String encryptedValue = SharedPreferencesUtil.parseByte2HexStr(SharedPreferencesUtil.encryptByAES(serializedValue, secretKey));//使用AES加密需要保存的值
-        SharedPreferencesUtil.changeSetting(context, encryptedKey, encryptedValue, "String");//保存加密后的数据
+        SharedPreferencesUtil.changeSetting(context, encryptedKey, encryptedValue);//保存加密后的数据
     }
 
     /**
@@ -219,7 +292,7 @@ public class SharedPreferencesHandler {
      *
      * @return 序列化数据
      *
-     * @throws IOException
+     * @throws IOException io异常
      */
     private <T extends BaseSet> String serialize(T t) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -238,8 +311,8 @@ public class SharedPreferencesHandler {
      *
      * @return 实体类
      *
-     * @throws IOException
-     * @throws ClassNotFoundException
+     * @throws IOException            io异常
+     * @throws ClassNotFoundException 未找到指定类异常
      */
     private <T extends BaseSet> T deSerialization(String str) throws IOException, ClassNotFoundException {
         byte[] buffer = Base64.decode(str, Base64.DEFAULT);

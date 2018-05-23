@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initData() {
         handler = SharedPreferencesHandler.getInstance();
-        handler.initSecretKey(getApplicationContext(), "");
+        handler.initSecretKey(getApplicationContext(), "", false);
     }
 
     private void initView() {

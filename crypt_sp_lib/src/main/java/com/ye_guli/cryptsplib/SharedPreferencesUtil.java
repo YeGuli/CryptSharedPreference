@@ -14,7 +14,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.Provider;
 import java.security.SecureRandom;
-import java.util.Set;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -37,41 +36,6 @@ class SharedPreferencesUtil {
     private static SharedPreferences zkSharedPreferences;
     private static SharedPreferences.Editor zkSharedPreferencesEditor;
 
-    /**
-     * 更改配置信息
-     *
-     * @param key   更改的配置项
-     * @param value 更改后的值
-     * @param type  值的类型
-     */
-    @SuppressLint("CommitPrefEdits")
-    static void changeSetting(Context context, String key, Object value, String type) {
-        zkSharedPreferences = context.getSharedPreferences(SETTING_SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
-        zkSharedPreferencesEditor = zkSharedPreferences.edit();
-        switch (type) {
-            case "int":
-                zkSharedPreferencesEditor.putInt(key, (int) value);
-                break;
-            case "float":
-                zkSharedPreferencesEditor.putFloat(key, (float) value);
-                break;
-            case "boolean":
-                zkSharedPreferencesEditor.putBoolean(key, (boolean) value);
-                break;
-            case "long":
-                zkSharedPreferencesEditor.putLong(key, (long) value);
-                break;
-            case "String":
-                zkSharedPreferencesEditor.putString(key, (String) value);
-                break;
-            case "set":
-                zkSharedPreferencesEditor.putStringSet(key, (Set<String>) value);
-                break;
-            default:
-                break;
-        }
-        zkSharedPreferencesEditor.apply();
-    }
 
     /**
      * 更改配置信息
@@ -95,33 +59,6 @@ class SharedPreferencesUtil {
             zkSharedPreferencesEditor.putString(key, (String) value);
         }
         zkSharedPreferencesEditor.apply();
-    }
-
-    /**
-     * 获取配置信息
-     *
-     * @param key          指定的配置项
-     * @param defaultValue 为空时默认的返回值
-     * @param type         值的类型
-     */
-    static Object getSetting(Context context, String key, Object defaultValue, String type) {
-        zkSharedPreferences = context.getSharedPreferences(SETTING_SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
-        switch (type) {
-            case "int":
-                return zkSharedPreferences.getInt(key, (int) defaultValue);
-            case "float":
-                return zkSharedPreferences.getFloat(key, (float) defaultValue);
-            case "boolean":
-                return zkSharedPreferences.getBoolean(key, (boolean) defaultValue);
-            case "long":
-                return zkSharedPreferences.getLong(key, (long) defaultValue);
-            case "String":
-                return zkSharedPreferences.getString(key, (String) defaultValue);
-            case "set":
-                return zkSharedPreferences.getStringSet(key, (Set<String>) defaultValue);
-            default:
-                return null;
-        }
     }
 
     /**
@@ -207,6 +144,7 @@ class SharedPreferencesUtil {
      *
      * @param content 需要加密的内容
      * @param key     密钥
+     *
      * @return 加密后的数据
      */
     static byte[] encryptByAES(String content, String key) {
@@ -248,6 +186,7 @@ class SharedPreferencesUtil {
      * 将16进制转换为二进制
      *
      * @param hexStr string字符串
+     *
      * @return 二进制数组
      */
     static byte[] parseHexStr2Byte(String hexStr) {
@@ -264,6 +203,7 @@ class SharedPreferencesUtil {
      * 将二进制转换成16进制
      *
      * @param buf 二进制数组
+     *
      * @return string字符串
      */
     static String parseByte2HexStr(byte[] buf) {
@@ -346,8 +286,10 @@ class SharedPreferencesUtil {
         }
     }
 
-    //android 7.0以上已经放弃使用SHA1PRNG算法从加密提供者那里取得密钥，因此对于7.0以上在这里实现一个Crypto提供者来生成秘钥
-    //made by Ye_Guli on 2017.03.20
+    /**
+     * android 7.0以上已经放弃使用SHA1PRNG算法从加密提供者那里取得密钥，因此对于7.0以上在这里实现一个Crypto提供者来生成秘钥
+     * made by Ye_Guli on 2017.03.20
+     **/
     private static class CryptoProvider extends Provider {
         public CryptoProvider() {
             super("Crypto", 1.0, "HARMONY (SHA1 digest; SecureRandom; SHA1withDSA signature)");
