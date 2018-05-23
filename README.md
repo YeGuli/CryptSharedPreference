@@ -1,11 +1,29 @@
 # CryptSharedPreference
-A save class with crypted in SharedPreference util.
 
 ## 1、介绍
 
 SharedPreferences中封装了一系列使用sp保存数据的方法，特点在于可以直接保存数据类与储存时加密数据。
 
-## 2、如何使用
+## 2、如何依赖
+step 1:
+在项目根目录下的build.gradle添加
+```groove
+	allprojects {
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
+	}
+```	
+step 2:
+添加项目依赖
+```groove
+	dependencies {
+	        compile 'com.github.zzbljh123:CryptSharedPreference:v1.0.0'
+	}
+```
+
+## 3、如何使用
 
 1. 创建继承自`BaseSet`的数据类：
 ```java
@@ -60,11 +78,11 @@ try {
 }
 ```
 
-## 3、数据加密说明
+## 4、数据加密说明
 
 1. sp的键名使用了SHA512加密；
 2. sp的键值使用了AES加密，AES加密所需的key则是由当前设备的IMEI值经过一系列算法生成;
 
-## 4、使用注意
+## 5、使用注意
 
 如果初始化秘钥时选择使用设备IMEI码处理秘钥则需要权限`<uses-permission android:name="android.permission.READ_PHONE_STATE"/>`
