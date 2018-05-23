@@ -1,3 +1,4 @@
+[![](https://jitpack.io/v/zzbljh123/CryptSharedPreference.svg)](https://jitpack.io/#zzbljh123/CryptSharedPreference)
 # CryptSharedPreference
 
 ## 1、介绍
