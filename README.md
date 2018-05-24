@@ -1,4 +1,4 @@
-[![](https://jitpack.io/v/zzbljh123/CryptSharedPreference.svg)](https://jitpack.io/#zzbljh123/CryptSharedPreference)
+[![](https://jitpack.io/v/YeGuli/CryptSharedPreference.svg)](https://jitpack.io/#YeGuli/CryptSharedPreference)
 # CryptSharedPreference
 
 ## 1、介绍
@@ -20,7 +20,7 @@ step 2:
 添加项目依赖
 ```groove
 	dependencies {
-	        compile 'com.github.zzbljh123:CryptSharedPreference:v1.0.0'
+	        implementation 'com.github.YeGuli:CryptSharedPreference:v1.0.0'
 	}
 ```
 
